@@ -1,18 +1,4 @@
-version: "3.9"
-
 services:
-  db:
-    image: postgres:15
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: bikesight
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    volumes:
-      - db_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-
   app:
     build: .
     command: streamlit run app/dashboard.py --server.port=8501 --server.address=0.0.0.0
@@ -25,8 +11,6 @@ services:
       - .:/app
     ports:
       - "8501:8501"
-    depends_on:
-      - db
 
   etl:
     build: .
@@ -39,9 +23,5 @@ services:
       PYTHONPATH: /app
     volumes:
       - .:/app
-    depends_on:
-      - db
-    profiles: ["etl"]
-
-volumes:
-  db_data:
+    profiles:
+      - etl
